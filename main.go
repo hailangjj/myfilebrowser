@@ -96,7 +96,7 @@ func fileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !info.IsDir() {
-		http.ServeFile(w, r, absPath)
+		serveFile(w, r, absPath, info.Name())
 		return
 	}
 
@@ -191,4 +191,23 @@ func isPreviewable(mime string) bool {
 		strings.HasPrefix(mime, "audio/") ||
 		strings.HasPrefix(mime, "video/") ||
 		mime == "application/pdf"
+}
+
+func serveFile(w http.ResponseWriter, r *http.Request, absPath, fileName string) {
+	ext := filepath.Ext(fileName)
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+	w.Header().Set("Content-Type", mimeType)
+
+	if r.URL.Query().Get("download") == "1" {
+		// 强制下载
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", fileName))
+	} else {
+		// 正常打开
+		w.Header().Set("Content-Disposition", fmt.Sprintf("inline; filename=%q", fileName))
+	}
+
+	http.ServeFile(w, r, absPath)
 }
