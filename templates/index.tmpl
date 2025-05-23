@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{.CurrentPath}}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>{{.CurrentPath}}</h1>
+    <nav class="breadcrumb">
+      <a href="/">Home</a>
+      {{range .Breadcrumbs}} / <a href="{{.Path}}">{{.Name}}</a>{{end}}
+    </nav>
+  </header>
+  
+  <section class="folders">
+    {{range .Folders}}
+      <div class="folder-item"><a href="{{.Path}}">📁 {{.Name}}</a></div>
+    {{end}}
+  </section>
+  
+  <hr />
+  
+  <section class="file-grid">
+    {{range .Files}}
+    <div class="file-card">
+      {{if .IsMedia}}
+        {{if (hasPrefix .MimeType "image/")}}
+          <img src="{{.Path}}" alt="{{.Name}}" loading="lazy" />
+        {{else if (hasPrefix .MimeType "video/")}}
+          <video src="{{.Path}}" controls preload="metadata"></video>
+        {{else if (hasPrefix .MimeType "audio/")}}
+          <audio src="{{.Path}}" controls preload="metadata"></audio>
+        {{end}}
+      {{else}}
+        <div class="placeholder">{{.Name}}</div>
+        <a class="download-btn" href="{{.Path}}"  target="_blank">Download</a>
+      {{end}}
+    </div>
+    {{end}}
+  </section>
+  
+</body>
+</html>

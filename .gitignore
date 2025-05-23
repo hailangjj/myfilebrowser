@@ -1,0 +1,37 @@
+# 忽略编译生成的二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# 忽略 /srv 目录（用户数据、上传文件等）
+/srv/*
+
+# 忽略编辑器或系统产生的临时文件
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+
+# 忽略 macOS 文件
+.DS_Store
+
+# 忽略 Windows 缩略图缓存
+Thumbs.db
+
+# 忽略 Go 的依赖缓存目录（如果你本地用了 vendor）
+vendor/
+
+# 忽略 IDE 相关文件夹（根据你使用的编辑器调整）
+.vscode/
+.idea/
+*.iml
+
+rice-box.go
+*.rice-box.go
+build.*
+
