@@ -195,36 +195,25 @@ header h1 {
   }
 }
 
-.download-btn {
-  background: #007acc;
-  color: #fff;
-  padding: 0.5em 1em;
-  border-radius: 6px;
+.button-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.preview-btn, .download-btn {
+  padding: 4px 12px;
+  border-radius: 4px;
   text-decoration: none;
-  text-align: center;
-  display: inline-block;
-  margin-top: 0.5em;
-  transition: background 0.2s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  border: none;
-  cursor: pointer;
   font-size: 0.9em;
-  &:hover {
-    background: #0065a5;
-  }
-  &:active {
-    background: #005a8c;
-  }
-  &:focus {
-    outline: none;
-  }
-  &:disabled {
-    background: #007acc;
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  @media (prefers-color-scheme: dark) {
-    background: #007acc;
-    color: #fff;
-  }
+}
+
+.preview-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.download-btn {
+  background: #2196F3;
+  color: #fff;
 }

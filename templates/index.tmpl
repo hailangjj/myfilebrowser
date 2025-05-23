@@ -40,7 +40,12 @@
         {{end}}
       {{else}}
         <div class="placeholder">{{.Name}}</div>
-        <a class="download-btn" href="{{.Path}}"  target="_blank">Download</a>
+        <div class="button-container">
+          {{if (isPreviewable .MimeType)}}
+            <a class="preview-btn" href="{{.Path}}" target="_blank">Preview</a>
+          {{end}}
+          <a class="download-btn" href="{{.Path}}" target="_blank">Download</a>
+        </div>
       {{end}}
     </div>
     {{end}}

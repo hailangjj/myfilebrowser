@@ -60,7 +60,8 @@ func main() {
 		log.Fatal(err)
 	}
 	tmpl = template.Must(template.New("tmpl").Funcs(template.FuncMap{
-		"hasPrefix": strings.HasPrefix,
+		"hasPrefix":     strings.HasPrefix,
+		"isPreviewable": isPreviewable,
 	}).Parse(templateString))
 
 	// 加载静态文件
@@ -181,4 +182,13 @@ func buildBreadcrumbs(path string) []Breadcrumb {
 	}
 
 	return crumbs
+}
+
+// isPreviewable 判断文件类型是否可预览。
+func isPreviewable(mime string) bool {
+	return strings.HasPrefix(mime, "text/") ||
+		strings.HasPrefix(mime, "image/") ||
+		strings.HasPrefix(mime, "audio/") ||
+		strings.HasPrefix(mime, "video/") ||
+		mime == "application/pdf"
 }
