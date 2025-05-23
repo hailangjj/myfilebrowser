@@ -28,7 +28,11 @@
     <div class="file-card">
       {{if .IsMedia}}
         {{if (hasPrefix .MimeType "image/")}}
-          <img src="{{.Path}}" alt="{{.Name}}" loading="lazy" />
+          <div class="media-container">
+            <div class="spinner"></div>
+            <img src="{{.Path}}" alt="{{.Name}}" loading="lazy"
+                onload="this.previousElementSibling.style.display='none'" />
+          </div>
         {{else if (hasPrefix .MimeType "video/")}}
           <video src="{{.Path}}" controls preload="metadata"></video>
         {{else if (hasPrefix .MimeType "audio/")}}
