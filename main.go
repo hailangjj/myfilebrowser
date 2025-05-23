@@ -55,14 +55,24 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	templateString, err := templateBox.String("index.tmpl")
-	if err != nil {
-		log.Fatal(err)
-	}
-	tmpl = template.Must(template.New("tmpl").Funcs(template.FuncMap{
+
+	tmpl = template.New("").Funcs(template.FuncMap{
 		"hasPrefix":     strings.HasPrefix,
 		"isPreviewable": isPreviewable,
-	}).Parse(templateString))
+	})
+
+	files := []string{"index.tmpl", "preview.tmpl"}
+	for _, name := range files {
+		// 为避免变量 err 遮蔽第 54 行的声明，使用新的变量名 errTemplate
+		content, errTemplate := templateBox.String(name)
+		if errTemplate != nil {
+			log.Fatalf("Failed to load template %s: %v", name, err)
+		}
+		_, err = tmpl.New(name).Parse(content)
+		if err != nil {
+			log.Fatalf("Failed to parse template %s: %v", name, err)
+		}
+	}
 
 	// 加载静态文件
 	staticFileBox, err := rice.FindBox("static")
@@ -71,6 +81,7 @@ func main() {
 	}
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(staticFileBox.HTTPBox())))
 
+	http.HandleFunc("/preview", previewHandler)
 	http.HandleFunc("/", fileHandler)
 
 	log.Printf("Serving %s on http://%s:%s\n", rootDir, *addr, *port)
@@ -150,7 +161,7 @@ func fileHandler(w http.ResponseWriter, r *http.Request) {
 		Files:       files,
 	}
 
-	if err := tmpl.Execute(w, view); err != nil {
+	if err := tmpl.ExecuteTemplate(w, "index.tmpl", view); err != nil {
 		log.Printf("Template execution error: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
@@ -210,4 +221,44 @@ func serveFile(w http.ResponseWriter, r *http.Request, absPath, fileName string)
 	}
 
 	http.ServeFile(w, r, absPath)
+}
+
+func previewHandler(w http.ResponseWriter, r *http.Request) {
+	queryPath := r.URL.Query().Get("path")
+	if queryPath == "" {
+		http.Error(w, "Missing path", http.StatusBadRequest)
+		return
+	}
+
+	absPath := filepath.Join(rootDir, filepath.Clean(queryPath))
+	info, err := os.Stat(absPath)
+	if err != nil || info.IsDir() {
+		http.NotFound(w, r)
+		return
+	}
+
+	// 校验路径合法性
+	rootAbs, _ := filepath.EvalSymlinks(rootDir)
+	absPathEval, _ := filepath.EvalSymlinks(absPath)
+	if rootAbs != "" && !strings.HasPrefix(absPathEval, rootAbs) {
+		http.Error(w, "Access denied", http.StatusForbidden)
+		return
+	}
+
+	ext := filepath.Ext(info.Name())
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
+	// 渲染预览页模板
+	err = tmpl.ExecuteTemplate(w, "preview.tmpl", map[string]interface{}{
+		"Name":     info.Name(),
+		"Path":     queryPath,
+		"MimeType": mimeType,
+		"Size":     info.Size(),
+	})
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }

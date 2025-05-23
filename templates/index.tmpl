@@ -42,7 +42,7 @@
         <div class="placeholder">{{.Name}}</div>
         <div class="button-container">
           {{if (isPreviewable .MimeType)}}
-            <a class="preview-btn" href="{{.Path}}" target="_blank">Preview</a>
+            <a class="preview-btn" href="/preview?path={{.Path}}" target="_blank">Preview</a>
           {{end}}
           <a class="download-btn" href="{{.Path}}?download=1" download target="_blank">Download</a>
         </div>

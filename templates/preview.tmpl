@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Preview: {{.Name}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/preview.css" />
+</head>
+
+</head>
+<body>
+  <div class="preview-container">
+    <iframe src="{{.Path}}">
+      <div class="placeholder">This file cannot be previewed in the browser.</div>
+      <div class="button-container">
+        <a class="download-btn" href="{{.Path}}?download=1" download target="_blank">Download</a>
+      </div>
+    </iframe>
+  </div>
+</body>
+</html>
